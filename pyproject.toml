@@ -1,0 +1,9 @@
+[tool.poetry]
+authors = ["Manuel Lera Ramirez <manulera14@gmail.com>"]
+description = ""
+name = "pombase_gtf_file"
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^2.0.3"

@@ -52,7 +52,20 @@ def main(input_file, output_file, gene_types_file):
         else:
             row_list.append(row)
 
-    pandas.DataFrame(row_list).drop(columns='systematic_id').to_csv(output_file, sep='\t', quoting=csv.QUOTE_NONE, header=False, index=False)
+    out_data = pandas.DataFrame(row_list)
+
+    # We want to have a single row for each gene, so we transform it into the one that encompasses all the transcripts
+    repeated_genes = out_data.loc[out_data.feature == 'gene', :]
+    repeated_genes = repeated_genes[repeated_genes['systematic_id'].duplicated(keep=False)]
+    repeated_genes = repeated_genes.groupby(['systematic_id', 'feature'], as_index=False).agg({'start': lambda x: min(x), 'end': lambda x: max(x)})
+    repeated_genes.rename(columns={'start': 'new_start', 'end': 'new_end'}, inplace=True)
+    out_data = out_data.merge(repeated_genes, on=['systematic_id', 'feature'], how='left')
+    # Substitute the start and end of the gene by the new ones where they exist
+    out_data.loc[~out_data.new_start.isna(), 'start'] = out_data.loc[~out_data.new_start.isna(), 'new_start']
+    out_data.loc[~out_data.new_end.isna(), 'end'] = out_data.loc[~out_data.new_end.isna(), 'new_end']
+    out_data.drop(columns=['systematic_id', 'new_start', 'new_end'], inplace=True)
+    out_data.drop_duplicates(inplace=True)
+    out_data.to_csv(output_file, sep='\t', quoting=csv.QUOTE_NONE, header=False, index=False)
 
 
 if __name__ == '__main__':

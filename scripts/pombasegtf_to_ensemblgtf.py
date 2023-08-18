@@ -16,7 +16,7 @@ biotype_mappings = {
     'pseudogene': 'pseudogene',
     'rRNA gene': 'rRNA',
     'snRNA gene': 'snRNA',
-    'sncRNA gene': 'protein_coding',
+    'sncRNA gene': 'ncRNA',
     'snoRNA gene': 'snoRNA',
     'tRNA gene': 'tRNA',
 }

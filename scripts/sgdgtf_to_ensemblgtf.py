@@ -1,17 +1,17 @@
 """
-This script converts the gtf file from PomBase to the format of Ensembl gtf files.
+This script converts the gtf file from SGD to the format of Ensembl gtf files.
 It adds gene_biotype and transcript_biotype attributes based on the data from the file
-gene_IDs_names_products.tsv from releases
+data/protein_coding_sgd.tsv (see get_data_sgd.sh)
 """
 import pandas
 import csv
 import argparse
 import re
 
-def main(input_file, output_file):
+def main(input_file, output_file, protein_coding_file):
 
     # Hacky:
-    with open('data/protein_coding_sgd.tsv') as f:
+    with open(protein_coding_file) as f:
         protein_coding_genes = set([line.strip() for line in f.readlines()])
 
     data = pandas.read_csv(input_file, sep='\t', header=None)
@@ -72,5 +72,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=Formatter)
     parser.add_argument('--input_file', help='input gtf file')
     parser.add_argument('--output_file', help='corrected gtf file')
+    parser.add_argument('--protein_coding_file', help='file with the list of protein coding genes')
     args = parser.parse_args()
-    main(args.input_file, args.output_file)
+    main(args.input_file, args.output_file, args.protein_coding_file)
